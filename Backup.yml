@@ -1,0 +1,44 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: my-postgres-backup
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-database-backup
+            image: doblajose/backup-postgres-s3:v1
+            imagePullPolicy: Always
+            env:
+              - name: AWS_ACCESS_KEY_ID
+                value: "myID"
+              - name: AWS_SECRET_ACCESS_KEY
+                value: "myKey"
+              - name: AWS_DEFAULT_REGION
+                value: "eu-central-1"
+              - name: AWS_BUCKET_NAME
+                value: "myBucket"
+              - name: AWS_BUCKET_BACKUP_PATH
+                value: "myFolder"
+              - name: TARGET_DATABASE_HOST
+                value: "myDBServer"
+              - name: TARGET_DATABASE_PORT
+                value: "5432"
+              - name: TARGET_DATABASE_NAMES
+                value: "myDB"
+              - name: TARGET_DATABASE_USER
+                value: "dbUser"
+              - name: PGPASSWORD
+                value: "dbPwd"                   
+              - name: SLACK_ENABLED
+                value: "true"
+              - name: SLACK_USERNAME
+                value: "slackUser"
+              - name: SLACK_CHANNEL
+                value: "myChannel"
+              - name: SLACK_WEBHOOK_URL
+                value: "https://hooks.slack.com/services/myHook"
+          restartPolicy: Never
