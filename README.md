@@ -145,3 +145,34 @@ spec:
                      key: slack_webhook_url
           restartPolicy: Never
 ```
+
+## Generate SSL Encrypt Key
+
+You needs to generate a private/public key for the database encryption. The public key will be added into the container for encryption and then you will use in a future the private one for decrypt the backup.
+
+To generate the keys you can use the following commands:
+
+```
+openssl req -x509 -nodes -newkey rsa:4096 -keyout YOUR_BACKUP_PRIVATE_key.pem \
+ -subj "/C=AR/ST=CBA/L=CBA/O=IT/CN=www.yourdomain.com" \
+ -out YOUR_BACKUP_key.pem.pub
+```
+
+## Restore procedure
+
+You can use the following procedure in order to restore your backups 
+
+1.- Download Backup File encrypted from S3 Bucket
+2.- Decrypt the File:
+```$ openssl smime -decrypt -in your_database_backup-02-08-2019-02_10_11.bz2.ssl -binary -inform DEM -inkey YOUR_BACKUP_PRIVATE_key.pem -out your_database_backup-02-08-2019-02_10_11.bz2```
+3.- Unzip File:
+```bzip2 -d your_database_backup-02-08-2019-02_10_11.bz2```
+4.- Copy File to POD:
+```kubectl cp /path/to/backup/your_database_backup-02-08-2019-02_10_11/your_database_backup-02-08-2019-02_10_11 yourNameSpace/your-db-pod-jdvb7:tmp/```
+5.- Login to POD:
+```kubectl exec -it your-db-pod-jdvb7 bash```
+6.- Change to postgres user:
+```su - postgres```
+7.- Restore File:
+```psql -U db_user db_name < /tmp/your_database_backup-02-08-2019-02_10_11```
+
