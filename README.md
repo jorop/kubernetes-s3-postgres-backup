@@ -163,16 +163,21 @@ openssl req -x509 -nodes -newkey rsa:4096 -keyout YOUR_BACKUP_PRIVATE_key.pem \
 You can use the following procedure in order to restore your backups 
 
 1.- Download Backup File encrypted from S3 Bucket
+
 2.- Decrypt the File:
 ```$ openssl smime -decrypt -in your_database_backup-02-08-2019-02_10_11.bz2.ssl -binary -inform DEM -inkey YOUR_BACKUP_PRIVATE_key.pem -out your_database_backup-02-08-2019-02_10_11.bz2```
+
 3.- Unzip File:
 ```bzip2 -d your_database_backup-02-08-2019-02_10_11.bz2```
+
 4.- Copy File to POD:
 ```kubectl cp /path/to/backup/your_database_backup-02-08-2019-02_10_11/your_database_backup-02-08-2019-02_10_11 yourNameSpace/your-db-pod-jdvb7:tmp/```
+
 5.- Login to POD:
 ```kubectl exec -it your-db-pod-jdvb7 bash```
+
 6.- Change to postgres user:
 ```su - postgres```
+
 7.- Restore File:
 ```psql -U db_user db_name < /tmp/your_database_backup-02-08-2019-02_10_11```
-
