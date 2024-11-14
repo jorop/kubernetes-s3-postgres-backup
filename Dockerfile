@@ -1,5 +1,5 @@
 # Set the base image
-FROM alpine:3.6
+FROM alpine:3.20.3
 
 RUN apk -v --update add \
         python \

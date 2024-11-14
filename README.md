@@ -1,6 +1,6 @@
 # kubernetes-s3-postgres-backup
 
-kubernetes-s3-postgres-backup is a container image based on Alpine Linux. This container is designed to run in Kubernetes as a cronjob to perform automatic backups of postgres databases to Amazon S3. It was created to meet my requirements for regular and automatic database backups. Having started with a relatively basic feature set, it is gradually growing to add more and more features.
+kubernetes-s3-postgres-backup is a container image based on Alpine Linux. This container is designed to run in Kubernetes as a cronjob to perform automatic backups of postgres databases to Amazon S3 or S3 compatible object storage like minio. It was created to meet my requirements for regular and automatic database backups. Having started with a relatively basic feature set, it is gradually growing to add more and more features.
 
 Currently, kubernetes-s3-postgres-backup supports the backing up of postgres Databases. It can perform backups of multiple postgres databases from a single database host. When triggered, a full database dump is performed using the `pg_dump` command for each configured database. The backup(s) are then uploaded to an Amazon S3 Bucket. kubernetes-s3-postgres-backup features Slack Integration, and can post messages into a channel detailing if the backup(s) were successful or not.
 
@@ -14,12 +14,13 @@ The below table lists all of the Environment Variables that are configurable for
 | AWS_SECRET_ACCESS_KEY       | **(Required)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                                                                         |
 | AWS_DEFAULT_REGION          | **(Required)** Region of the S3 Bucket (e.g. eu-west-2).                                                         |
 | AWS_BUCKET_NAME             | **(Required)** The name of the S3 bucket.                                                                        |
-| AWS_BUCKET_BACKUP_PATH      | **(Required)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**                                                                                                        |
+| AWS_BUCKET_BACKUP_PATH      | **(Required)** Path the backup file should be saved to in S3. E.g. `/database/myblog/backups`. **Do not put a trailing / or specify the filename.**  
+| AWS_S3_ENDPOINT             | **(Optional)** Endpoint other than AWS. E.g. `https://s3-storage.example.com`                                                                                        |
 | TARGET_DATABASE_HOST        | **(Required)** Hostname or IP address of the postgres Host.                                                         |
 | TARGET_DATABASE_PORT        | **(Optional)** Port postgres is listening on (Default: 5432).                                                       |
 | TARGET_DATABASE_NAMES       | **(Required)** Name of the databases to dump. This should be comma seperated (e.g. `database1,database2`).       |
 | TARGET_DATABASE_USER        | **(Required)** Username to authenticate to the database with.                                                    |
-| PGPASSWORD                  | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
+| TARGET_DATABASE_PASSWORD    | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
 | SLACK_ENABLED               | **(Optional)** (true/false) Enable or disable the Slack Integration (Default False).                             |
 | SLACK_USERNAME              | **(Optional)** (true/false) Username to use for the Slack Integration (Default: kubernetes-s3-postgres-backup).            |
 | SLACK_CHANNEL               | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                     |
