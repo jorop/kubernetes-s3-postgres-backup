@@ -104,10 +104,20 @@ spec:
     spec:
       template:
         spec:
+          volumes:
+          - name: public_key
+            secret:
+              secretName: secrets
+              items:
+              - key: public_key
+                path: ""
           containers:
           - name: my-database-backup
             image: gcr.io/maynard-io-public/kubernetes-s3-postgres-backup
             imagePullPolicy: Always
+            volumeMounts:
+            - name: public_key
+              mountPath: "/"
             env:
               - name: AWS_ACCESS_KEY_ID
                 value: "<Your Access Key>"

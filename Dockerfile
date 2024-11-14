@@ -22,7 +22,7 @@ ENV SLACK_USERNAME=kubernetes-s3-postgres-backup
 # Copy Slack Alert script and make executable
 COPY resources/slack-alert.sh /
 COPY resources/pg_dump /usr/bin/
-COPY resources/YOUR_BACKUP_key.pem.pub /
+# COPY resources/YOUR_BACKUP_key.pem.pub /
 RUN chmod +x /usr/bin/pg_dump
 RUN chmod +x /slack-alert.sh
 
