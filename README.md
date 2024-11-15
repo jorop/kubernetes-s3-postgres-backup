@@ -140,7 +140,7 @@ spec:
                 value: "<Your Target Database Name(s)>"
               - name: TARGET_DATABASE_USER
                 value: "<Your Target Database Username>"
-              - name: TARGET_DATABASE_PASSWORD
+              - name: PGPASSWORD
                 valueFrom:
                    secretKeyRef:
                      name: TARGET_DATABASE_PASSWORD
