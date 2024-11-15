@@ -20,7 +20,7 @@ The below table lists all of the Environment Variables that are configurable for
 | TARGET_DATABASE_PORT        | **(Optional)** Port postgres is listening on (Default: 5432).                                                       |
 | TARGET_DATABASE_NAMES       | **(Required)** Name of the databases to dump. This should be comma seperated (e.g. `database1,database2`).       |
 | TARGET_DATABASE_USER        | **(Required)** Username to authenticate to the database with.                                                    |
-| TARGET_DATABASE_PASSWORD    | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
+| PGPASSWORD                  | **(Required)** Password to authenticate to the database with. Should be configured using a Secret in Kubernetes. |
 | SLACK_ENABLED               | **(Optional)** (true/false) Enable or disable the Slack Integration (Default False).                             |
 | SLACK_USERNAME              | **(Optional)** (true/false) Username to use for the Slack Integration (Default: kubernetes-s3-postgres-backup).            |
 | SLACK_CHANNEL               | **(Required if Slack enabled)** Slack Channel the WebHook is configured for.                                     |
@@ -94,6 +94,14 @@ type: Opaque
 data:
   slack_webhook_url: <Your Slack WebHook URL>
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pubkey-backup
+type: Opaque
+data:
+  backup_prod_key.pem.pub: <Your Public Key>
+---
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -107,17 +115,15 @@ spec:
           volumes:
           - name: public_key
             secret:
-              secretName: secrets
-              items:
-              - key: public_key
-                path: ""
+              secretName: pubkey-backup
           containers:
           - name: my-database-backup
             image: gcr.io/maynard-io-public/kubernetes-s3-postgres-backup
             imagePullPolicy: Always
             volumeMounts:
-            - name: public_key
-              mountPath: "/"
+            - name: public-key
+              mountPath: "/pgbkp"
+              readOnly: true
             env:
               - name: AWS_ACCESS_KEY_ID
                 value: "<Your Access Key>"

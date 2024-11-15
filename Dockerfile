@@ -8,7 +8,7 @@ RUN apk -v --update add \
         less \
         mailcap \
         openssl \
-        postgresql-client \
+        postgresql14-client \
         curl
 RUN rm /usr/lib/python*/EXTERNALLY-MANAGED && \
     python3 -m ensurepip
@@ -23,8 +23,6 @@ ENV SLACK_USERNAME=kubernetes-s3-postgres-backup
 RUN mkdir /pgbkp
 # Copy Slack Alert script and make executable
 COPY resources/slack-alert.sh /
-COPY resources/pg_dump /usr/bin/
-RUN chmod +x /usr/bin/pg_dump
 RUN chmod +x /slack-alert.sh
 
 # Copy backup script and execute
