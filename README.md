@@ -10,6 +10,7 @@ The below table lists all of the Environment Variables that are configurable for
 
 | Environment Variable        | Purpose                                                                                                          |
 | --------------------------- |------------------------------------------------------------------------------------------------------------------|
+| CLUSTER_NAME                | **(Optional)** Will be added as prefix of the backup file name.                                                  |
 | AWS_ACCESS_KEY_ID           | **(Required)** AWS IAM Access Key ID.                                                                            |
 | AWS_SECRET_ACCESS_KEY       | **(Required)** AWS IAM Secret Access Key. Should have very limited IAM permissions (see below for example) and should be configured using a Secret in Kubernetes.                                                                                                         |
 | AWS_DEFAULT_REGION          | **(Required)** Region of the S3 Bucket (e.g. eu-west-2).                                                         |
@@ -125,6 +126,8 @@ spec:
               mountPath: "/pgbkp"
               readOnly: true
             env:
+              - name: CLUSTER_NAME
+                value: "myCluster"
               - name: AWS_ACCESS_KEY_ID
                 value: "<Your Access Key>"
               - name: AWS_SECRET_ACCESS_KEY

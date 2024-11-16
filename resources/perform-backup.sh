@@ -1,13 +1,12 @@
 #/bin/sh
-# purge old logs
-rm /tmp/kubernetes-s3-postgres-backup.log
+
 # Set the has_failed variable to false. This will change if any of the subsequent database backups/uploads fail.
 has_failed=false
 # Loop through all the defined databases, seperating by a ,
 for CURRENT_DATABASE in ${TARGET_DATABASE_NAMES}
 do
 
-    DUMP=${TARGET_DATABASE_NAMES}_$(date +%s).bz2.ssl
+    DUMP=${CLUSTER_NAME}_${CURRENT_DATABASE}_$(date +%s).bz2.ssl
     # Perform the database backup. Put the output to a variable. If successful upload the backup to S3, if unsuccessful print an entry to the console and the log, and set has_failed to true.
     sqloutput=$(pg_dump -U $TARGET_DATABASE_USER -h $TARGET_DATABASE_HOST -p $TARGET_DATABASE_PORT $CURRENT_DATABASE | bzip2 | openssl smime -encrypt -aes256 -binary -outform DEM -out /tmp/$DUMP /pgbkp/backup_prod_key.pem.pub 2>&1)
     if [ $? -ne 0 ]
@@ -27,7 +26,7 @@ do
             echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
             has_failed=true
         fi
-        rm /tmp/"$DUMP"
+        rm "/tmp/$DUMP"
         
     else
         echo -e "Database backup FAILED for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). Error: $sqloutput" | tee -a /tmp/kubernetes-s3-postgres-backup.log

@@ -10,9 +10,11 @@ spec:
         spec:
           containers:
           - name: my-database-backup
-            image: doblajose/backup-postgres-s3:v1
+            image: jorop/kubernetes-s3-postgres-backup
             imagePullPolicy: Always
             env:
+              - name: CLUSTER_NAME
+                value: "myCluster"
               - name: AWS_ACCESS_KEY_ID
                 value: "myID"
               - name: AWS_SECRET_ACCESS_KEY
