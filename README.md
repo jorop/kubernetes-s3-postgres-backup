@@ -102,7 +102,7 @@ type: Opaque
 data:
   backup_prod_key.pem.pub: <Your Public Key>
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: my-database-backup
@@ -113,12 +113,12 @@ spec:
       template:
         spec:
           volumes:
-          - name: public_key
+          - name: public-key
             secret:
               secretName: pubkey-backup
           containers:
           - name: my-database-backup
-            image: gcr.io/maynard-io-public/kubernetes-s3-postgres-backup
+            image: jorop/kubernetes-s3-postgres-backup
             imagePullPolicy: Always
             volumeMounts:
             - name: public-key
