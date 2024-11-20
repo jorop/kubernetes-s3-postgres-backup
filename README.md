@@ -103,6 +103,14 @@ type: Opaque
 data:
   backup_prod_key.pem.pub: <Your Public Key>
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: key-restore
+type: Opaque
+data:
+  backup_prod_key.pem: <Your Private Key>
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -128,6 +136,8 @@ spec:
             env:
               - name: CLUSTER_NAME
                 value: "myCluster"
+              - name: AWS_S3_ENDPOINT
+                value: https://s3.example.com 
               - name: AWS_ACCESS_KEY_ID
                 value: "<Your Access Key>"
               - name: AWS_SECRET_ACCESS_KEY
@@ -179,6 +189,16 @@ openssl req -x509 -nodes -newkey rsa:4096 -keyout YOUR_BACKUP_PRIVATE_key.pem \
 ```
 
 ## Restore procedure
+### Option 1
+ 
+Create a pod like `Restore.yml`  
+> When restoring from e.g. bitnami postgresql chart the `postgres` user should be used to restore the database, in any case the user should be able to drop and create a database on the db instance. 
+
+The script `restore-backup.sh` will list the available options when invoked.
+- `./restore-backup.sh list` -> list the available backups in the s3 bucket
+- `./restore-backup.sh restore filename-in-s3-bucket database-name` -> restore backup into database; a backup will be created at `/tmp/security_bkp.sql`, then the database will be dropped completely and restored from the backup of the chosen file in the s3-bucket
+
+### Option 2
 
 You can use the following procedure in order to restore your backups 
 

@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: restore-backup
+spec:
+  volumes:
+  - name: private-key
+    secret:
+      secretName: key-restore
+  containers:
+  - name: my-database-restore
+    volumeMounts:
+    - name: private-key
+      mountPath: "/pgbkp"
+      readOnly: true
+    image: jorop/kubernetes-s3-postgres-backup
+    imagePullPolicy: Always
+    command:
+    - sh
+    - -c
+    - sleep infinity
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    env:
+      - name: CLUSTER_NAME
+        value: "myCluster"
+      - name: AWS_S3_ENDPOINT
+        value: https://s3.example.com 
+      - name: AWS_ACCESS_KEY_ID
+        value: "myID"
+      - name: AWS_SECRET_ACCESS_KEY
+        value: "myKey"
+      - name: AWS_DEFAULT_REGION
+        value: "eu-central-1"
+      - name: AWS_BUCKET_NAME
+        value: "myBucket"
+      - name: AWS_BUCKET_BACKUP_PATH
+        value: "myFolder"
+      - name: TARGET_DATABASE_HOST
+        value: "myDBServer"
+      - name: TARGET_DATABASE_PORT
+        value: "5432"
+      - name: TARGET_DATABASE_NAMES
+        value: "myDB"
+      - name: TARGET_DATABASE_USER
+        value: "root"
+      - name: PGPASSWORD
+        value: "dbPwd"
+  restartPolicy: Never

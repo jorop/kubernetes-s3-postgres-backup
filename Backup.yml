@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: my-postgres-backup
@@ -8,13 +8,23 @@ spec:
     spec:
       template:
         spec:
+          volumes:
+          - name: public-key
+            secret:
+              secretName: pubkey-backup
           containers:
           - name: my-database-backup
+            volumeMounts:
+            - name: public-key
+              mountPath: "/pgbkp"
+              readOnly: true
             image: jorop/kubernetes-s3-postgres-backup
             imagePullPolicy: Always
             env:
               - name: CLUSTER_NAME
                 value: "myCluster"
+              - name: AWS_S3_ENDPOINT
+                value: https://s3.example.com 
               - name: AWS_ACCESS_KEY_ID
                 value: "myID"
               - name: AWS_SECRET_ACCESS_KEY
