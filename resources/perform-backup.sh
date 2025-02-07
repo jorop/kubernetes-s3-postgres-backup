@@ -26,7 +26,7 @@ do
             echo "$awsoutput"
             echo -e "Database backup successfully uploaded for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S')."
         else
-            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). $awsoutput" | tee -a /tmp/kubernetes-cloud-mysql-backup.log
+            echo -e "Database backup failed to upload for $CURRENT_DATABASE at $(date +'%d-%m-%Y %H:%M:%S'). $awsoutput" | tee -a /tmp/kubernetes-s3-postgres-backup.log
             has_failed=true
         fi
         rm "/tmp/$DUMP"
