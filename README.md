@@ -221,3 +221,8 @@ You can use the following procedure in order to restore your backups
 
 7.- Restore File:
 ```psql -U db_user db_name < /tmp/your_database_backup-02-08-2019-02_10_11```
+
+
+## Docker images
+- for psql 14: `jorop/kubernetes-s3-postgres-backup:v0.0.9`
+- for psql 17: `jorop/kubernetes-s3-postgres-backup:v0.0.10-psql17`
